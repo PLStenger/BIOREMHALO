@@ -76,7 +76,7 @@ qiime dada2 denoise-paired --i-demultiplexed-seqs core/demux_neg.qza \
  # 001_mini_pipeline_for_contaminated_sequences
 
 ###################################################################################################
-# Cette étape seulement si pas d'échantillon de control
+# Cette étape seulement si pas d'échantillon de control et manuel
 ###################################################################################################
 #
 #qiime tools import \
@@ -94,14 +94,18 @@ qiime dada2 denoise-paired --i-demultiplexed-seqs core/demux_neg.qza \
 #      					     --o-sequence-misses core/NegRepSeq.qza
 ###################################################################################################
 
-qiime quality-control exclude-seqs --i-query-sequences core/RepSeq.qza \
-      					     --i-reference-sequences core/RepSeq_neg.qza\
-      					     --p-method vsearch \
-      					     --p-threads 6 \
-      					     --p-perc-identity 1.00 \
-      					     --p-perc-query-aligned 1.00 \
-      					     --o-sequence-hits core/HitNegCtrl.qza \
-      					     --o-sequence-misses core/NegRepSeq.qza
+###################################################################################################
+# Cette étape seulement si échantillon de control
+###################################################################################################
+
+#qiime quality-control exclude-seqs --i-query-sequences core/RepSeq.qza \
+#      					     --i-reference-sequences core/RepSeq_neg.qza\
+#      					     --p-method vsearch \
+#      					     --p-threads 6 \
+#      					     --p-perc-identity 1.00 \
+#      					     --p-perc-query-aligned 1.00 \
+#      					     --o-sequence-hits core/HitNegCtrl.qza \
+#      					     --o-sequence-misses core/NegRepSeq.qza
 
 # table_contamination_filter :
 ##############################
@@ -109,10 +113,10 @@ qiime quality-control exclude-seqs --i-query-sequences core/RepSeq.qza \
 # Aim: filter features from table based on frequency and/or metadata
 #      Use: qiime feature-table filter-features [OPTIONS]
 
-qiime feature-table filter-features --i-table core/Table.qza \
-     					      --m-metadata-file core/HitNegCtrl.qza \
-     					      --o-filtered-table core/NegTable.qza \
-     					      --p-exclude-ids
+#qiime feature-table filter-features --i-table core/Table.qza \
+#     					      --m-metadata-file core/HitNegCtrl.qza \
+#     					      --o-filtered-table core/NegTable.qza \
+#     					      --p-exclude-ids
 
 # table_contingency_filter :
 ############################
@@ -127,10 +131,10 @@ qiime feature-table filter-features --i-table core/Table.qza \
     # min_freq: 0 # Remove features with a total abundance (summed across all samples) of less than 0 !
 
 
-qiime feature-table filter-features  --i-table core/NegTable.qza \
-        					       --p-min-samples 2 \
-        					       --p-min-frequency 0 \
-        					       --o-filtered-table core/ConTable.qza
+#qiime feature-table filter-features  --i-table core/NegTable.qza \
+#        					       --p-min-samples 2 \
+#        					       --p-min-frequency 0 \
+#        					       --o-filtered-table core/ConTable.qza
 
 
 # sequence_contingency_filter :
@@ -139,9 +143,9 @@ qiime feature-table filter-features  --i-table core/NegTable.qza \
 # Aim: Filter features from sequence based on table and/or metadata
        # Use: qiime feature-table filter-seqs [OPTIONS]
 
-qiime feature-table filter-seqs --i-data core/NegRepSeq.qza \
-      					  --i-table core/ConTable.qza \
-      					  --o-filtered-data core/ConRepSeq.qza
+#qiime feature-table filter-seqs --i-data core/NegRepSeq.qza \
+#      					  --i-table core/ConTable.qza \
+#      					  --o-filtered-data core/ConRepSeq.qza
 
 
 # sequence_summarize :
