@@ -23,18 +23,24 @@ cd $WORKING_DIRECTORY
 # Cleaning step
 ####################################################
 
-####################################################
-# Cleaning step
-####################################################
-
-for R1 in *R1*
+for R1 in *_1.fastq.gz
 do
-   R2=${R1//R1_001.fastq.gz/R2_001.fastq.gz}
-   R1paired=${R1//.fastq.gz/_paired.fastq.gz}
-   R1unpaired=${R1//.fastq.gz/_unpaired.fastq.gz}	
-   R2paired=${R2//.fastq.gz/_paired.fastq.gz}
-   R2unpaired=${R2//.fastq.gz/_unpaired.fastq.gz}	
+   # Get the base name without the _1.fastq.gz
+   BASENAME=${R1%_1.fastq.gz}
+   R2=${BASENAME}_2.fastq.gz
 
-   trimmomatic PE -Xmx60G -threads 8 -phred33 $R1 $R2 $OUTPUT/$R1paired $OUTPUT/$R1unpaired $OUTPUT/$R2paired $OUTPUT/$R2unpaired ILLUMINACLIP:"$ADAPTERFILE":2:30:10 LEADING:30 TRAILING:30 SLIDINGWINDOW:26:30 MINLEN:150
+   R1paired=${BASENAME}_1_paired.fastq.gz
+   R1unpaired=${BASENAME}_1_unpaired.fastq.gz
+   R2paired=${BASENAME}_2_paired.fastq.gz
+   R2unpaired=${BASENAME}_2_unpaired.fastq.gz
 
-done ;
+   echo "Processing $BASENAME..."
+
+   trimmomatic PE -Xmx60G -threads 8 -phred33 \
+   $R1 $R2 \
+   $OUTPUT/$R1paired $OUTPUT/$R1unpaired \
+   $OUTPUT/$R2paired $OUTPUT/$R2unpaired \
+   ILLUMINACLIP:"$ADAPTERFILE":2:30:10 \
+   LEADING:30 TRAILING:30 SLIDINGWINDOW:26:30 MINLEN:150
+
+done
