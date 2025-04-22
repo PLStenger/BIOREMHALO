@@ -10,8 +10,10 @@ WORKING_DIRECTORY=/scratch_vol0/fungi/BIOREMHALO/05_QIIME2
 OUTPUT=/scratch_vol0/fungi/BIOREMHALO/05_QIIME2/visual
 
 DATABASE=/scratch_vol0/fungi/BIOREMHALO/98_database_files
-TMPDIR=/home
+TMPDIR=/scratch_vol0
 
+rm -rf /home/fungi/tmp*
+rm -rf /scratch_vol0/fungi/tmp*
 
 # Aim: classify reads by taxon using a fitted classifier
 
@@ -36,16 +38,12 @@ eval "$(conda shell.bash hook)"
 conda activate qiime2-2021.4
 
 # I'm doing this step in order to deal the no space left in cluster :
-export TMPDIR='/home/fungi'
+export TMPDIR='/scratch_vol0/fungi'
 echo $TMPDIR
 
 # Make the directory (mkdir) only if not existe already(-p)
 mkdir -p taxonomy/16S
 mkdir -p export/taxonomy/16S
-
-# I'm doing this step in order to deal the no space left in cluster :
-export TMPDIR='/home/fungi'
-echo $TMPDIR
 
 ###### All this step was for "old" database, now we uysed new ones 
 ######
@@ -152,9 +150,13 @@ qiime feature-classifier extract-reads --i-sequences taxonomy/16S/DataSeq.qza \
         --o-reads taxonomy/16S/RefSeq.qza 
 
 
+export TMPDIR=/scratch_vol0/fungi
+export TMP=/scratch_vol0/fungi
+export TEMP=/scratch_vol0/fungi
+
 # Aim: Create a scikit-learn naive_bayes classifier for reads
 
-qiime feature-classifier fit-classifier-naive-bayes \
+TMPDIR=/scratch_vol0/fungi qiime feature-classifier fit-classifier-naive-bayes \
   --i-reference-reads taxonomy/16S/RefSeq.qza \
   --i-reference-taxonomy taxonomy/16S/RefTaxo.qza \
   --o-classifier taxonomy/16S/Classifier.qza
